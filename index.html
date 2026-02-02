@@ -34,3 +34,143 @@
             <p id="error-msg" class="text-red-500 text-sm mt-4 hidden text-center font-medium">Invalid credentials. Please try again.</p>
         </div>
     </div>
+
+    <div id="main-content" class="hidden">
+        <div class="no-print flex justify-center space-x-4 py-6 bg-slate-900 sticky top-0 z-10 shadow-lg">
+            <button onclick="exportPDF()" class="bg-emerald-500 text-white px-10 py-2 rounded-full font-bold shadow-md hover:bg-emerald-600 transition">Download PDF</button>
+            <button onclick="window.location.reload()" class="bg-slate-700 text-white px-10 py-2 rounded-full font-bold shadow-md hover:bg-slate-800 transition">Logout</button>
+        </div>
+
+        <div id="timesheet" class="a4-page">
+            <div class="flex justify-between items-start border-b-4 border-blue-900 pb-8 mb-10">
+                <div>
+                    <h1 class="text-5xl font-black text-blue-900 tracking-tighter">TIMESHEET</h1>
+                    <div class="mt-6 flex items-center space-x-3">
+                        <span class="font-bold text-xs text-slate-400 uppercase tracking-widest">Week Ending Date:</span>
+                        <input type="date" class="border-b-dotted font-bold text-lg w-48 text-blue-700">
+                    </div>
+                </div>
+                <div class="w-1/2 text-right">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Worker Information</label>
+                    <input type="text" placeholder="Full Name" class="text-2xl font-black text-right border-b-dotted placeholder-slate-200 uppercase">
+                    <input type="text" placeholder="Employee ID / Position" class="text-md text-right border-b-dotted mt-2 text-slate-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-12 mb-10">
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
+                    <label class="block text-xs font-bold uppercase text-blue-900 mb-3">Client & Site Details</label>
+                    <input type="text" placeholder="Client Name" class="font-bold mb-3 border-b-dotted py-1 text-lg">
+                    <textarea placeholder="Service Address & Billing Instructions" class="text-sm h-24 border-b-dotted py-1 resize-none leading-relaxed"></textarea>
+                </div>
+                <div class="flex flex-col justify-center items-end text-right">
+                    <div class="space-y-1 text-xs font-bold text-slate-400 uppercase">
+                        <p>Mon - Fri: <span class="text-blue-600">$70.00/hr</span></p>
+                        <p>Saturday: <span class="text-orange-600">$98.00/hr</span></p>
+                        <p>Sunday: <span class="text-red-600">$127.00/hr</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <table class="w-full mb-10">
+                <thead>
+                    <tr class="bg-blue-900 text-white uppercase text-[10px] tracking-[0.2em]">
+                        <th class="p-4 text-left rounded-tl-lg">Day</th>
+                        <th class="p-4 text-left">Description of Tasks & Project Codes</th>
+                        <th class="p-4 text-center w-24">Hours</th>
+                        <th class="p-4 text-center w-24">Rate</th>
+                        <th class="p-4 text-right rounded-tr-lg w-32">Daily Total</th>
+                    </tr>
+                </thead>
+                <tbody id="timesheet-rows" class="text-sm">
+                    </tbody>
+            </table>
+
+            <div class="flex justify-between items-end mt-12">
+                <div class="w-1/2">
+                    <div class="mb-4">
+                        <div class="border-b-2 border-slate-900 w-64 h-12"></div>
+                        <p class="text-[10px] font-bold uppercase text-slate-400 mt-2 tracking-widest">Worker Signature</p>
+                    </div>
+                </div>
+                <div class="w-1/3">
+                    <div class="flex justify-between items-center px-4 py-2 border-b border-slate-200">
+                        <span class="text-[10px] font-bold uppercase text-slate-500">Total Weekly Hours:</span>
+                        <span id="total-hrs" class="font-bold text-lg">0.0</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-blue-900 text-white rounded-b-xl shadow-xl">
+                        <span class="text-xs font-bold uppercase tracking-widest">Grand Total</span>
+                        <span id="grand-total" class="text-2xl font-black font-mono">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rates = {
+            'Monday': 70, 'Tuesday': 70, 'Wednesday': 70, 
+            'Thursday': 70, 'Friday': 70, 'Saturday': 98, 'Sunday': 127
+        };
+
+        const tableBody = document.getElementById('timesheet-rows');
+        Object.keys(rates).forEach(day => {
+            const row = document.createElement('tr');
+            row.className = "border-b border-slate-100 hover:bg-slate-50 transition";
+            row.innerHTML = `
+                <td class="p-4 font-bold text-slate-700">${day}</td>
+                <td class="p-2"><textarea placeholder="Specific tasks performed..." class="h-12 py-2 text-xs resize-none"></textarea></td>
+                <td class="p-2"><input type="number" class="hr-input text-center font-bold text-blue-600" value="0" step="0.5" data-day="${day}" oninput="calculateAll()"></td>
+                <td class="p-2 text-center text-slate-400 font-medium">$${rates[day]}</td>
+                <td class="p-4 text-right font-mono font-bold text-slate-600 day-total">$0.00</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        function checkLogin() {
+            const u = document.getElementById('username').value.toLowerCase();
+            const p = document.getElementById('password').value;
+            if(u === "admin" && p === "password123") {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('main-content').classList.remove('hidden');
+            } else {
+                document.getElementById('error-msg').classList.remove('hidden');
+            }
+        }
+
+        function calculateAll() {
+            const rows = document.querySelectorAll('#timesheet-rows tr');
+            let totalHours = 0;
+            let grandTotal = 0;
+
+            rows.forEach(row => {
+                const input = row.querySelector('.hr-input');
+                const day = input.getAttribute('data-day');
+                const hrs = parseFloat(input.value) || 0;
+                const rate = rates[day];
+                
+                const dailySum = hrs * rate;
+                totalHours += hrs;
+                grandTotal += dailySum;
+
+                row.querySelector('.day-total').innerText = `$${dailySum.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            });
+
+            document.getElementById('total-hrs').innerText = totalHours.toFixed(1);
+            document.getElementById('grand-total').innerText = `$${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        }
+
+        function exportPDF() {
+            const element = document.getElementById('timesheet');
+            const opt = {
+                margin: 0,
+                filename: 'Weekly_Timesheet.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 3 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+    </script>
+</body>
+</html>
