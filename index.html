@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Damien Needham Support Services - Timesheet</title>
+    <title>Damien Needham Support Services - Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -22,6 +22,9 @@
         input:focus, textarea:focus { outline: none; background: #f0f9ff; }
         .border-b-dotted { border-bottom: 2px dotted #e2e8f0; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* Checkbox styling */
+        .custom-checkbox:disabled { cursor: not-allowed; opacity: 0.5; }
     </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-900">
@@ -30,10 +33,22 @@
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 border border-slate-200 text-center">
             <h2 class="text-xl font-bold mb-2 uppercase tracking-tight text-slate-800">Damien Needham</h2>
             <p class="text-xs text-slate-500 mb-6 uppercase tracking-widest text-slate-400">Support Portal</p>
+            
             <div class="space-y-4 text-left">
                 <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300 outline-none">
                 <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300 outline-none">
-                <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">Access Timesheet</button>
+                
+                <div class="flex items-start space-x-3 py-2">
+                    <input type="checkbox" id="auth-check" class="mt-1 w-4 h-4 cursor-pointer" onchange="toggleLoginBtn()">
+                    <label for="auth-check" class="text-[11px] text-slate-500 leading-tight cursor-pointer">
+                        I confirm that I am authorized to access this portal and the data entered is for official billing purposes only.
+                    </label>
+                </div>
+
+                <button id="login-btn" onclick="checkLogin()" disabled 
+                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition opacity-50 cursor-not-allowed">
+                    Access Timesheet
+                </button>
             </div>
             <p id="error-msg" class="text-red-500 text-sm mt-4 hidden">Invalid credentials.</p>
         </div>
@@ -81,9 +96,9 @@
                 </div>
                 <div class="flex flex-col justify-center items-end text-right">
                     <div class="space-y-1 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                        <p>Weekday: <span class="text-blue-600 font-mono text-xs">$70.00/hr</span></p>
-                        <p>Saturday: <span class="text-orange-600 font-mono text-xs">$98.00/hr</span></p>
-                        <p>Sunday: <span class="text-red-600 font-mono text-xs">$127.00/hr</span></p>
+                        <p>Weekday: <span class="text-blue-600 font-mono text-xs font-black">$70.00/hr</span></p>
+                        <p>Saturday: <span class="text-orange-600 font-mono text-xs font-black">$98.00/hr</span></p>
+                        <p>Sunday: <span class="text-red-600 font-mono text-xs font-black">$127.00/hr</span></p>
                     </div>
                 </div>
             </div>
@@ -98,7 +113,7 @@
                         <th class="p-4 text-right rounded-tr-lg w-32">Subtotal</th>
                     </tr>
                 </thead>
-                <tbody id="timesheet-rows" class="text-sm">
+                <tbody id="timesheet-rows" class="text-sm text-slate-700">
                     </tbody>
             </table>
 
@@ -141,7 +156,7 @@
                 const row = document.createElement('tr');
                 row.className = "border-b border-slate-100";
                 row.innerHTML = `
-                    <td class="p-4 font-bold text-slate-700">${day}</td>
+                    <td class="p-4 font-bold text-slate-800">${day}</td>
                     <td class="p-2">
                         <textarea class="h-10 py-1 text-xs resize-none font-medium leading-tight outline-none">${config[day].desc}\n</textarea>
                     </td>
@@ -153,10 +168,25 @@
             });
         }
 
+        // Control Login Button State
+        function toggleLoginBtn() {
+            const checkbox = document.getElementById('auth-check');
+            const btn = document.getElementById('login-btn');
+            if (checkbox.checked) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
         function checkLogin() {
             const u = document.getElementById('username').value.toLowerCase();
             const p = document.getElementById('password').value;
-            if(u === "admin" && p === "password123") {
+            const checkbox = document.getElementById('auth-check');
+            
+            if(u === "admin" && p === "password123" && checkbox.checked) {
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('main-content').classList.remove('hidden');
                 generateRows();
