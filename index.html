@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Timesheet - A4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @media print { .no-print { display: none; } }
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 20mm;
+            margin: 10px auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, textarea, select { border: none; background: transparent; width: 100%; }
+        input:focus, textarea:focus { outline: none; background: #f9fafb; }
+        .border-b-dotted { border-bottom: 1px dotted #ccc; }
+    </style>
+</head>
+<body class="bg-gray-200 font-sans text-gray-800">
+
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-96">
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">Secure Access</h2>
+            <div class="space-y-4">
+                <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg bg-gray-50">
+                <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg bg-gray-50">
+                <button onclick="checkLogin()" class="w-full bg-blue-700 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition">Enter Dashboard</button>
+            </div>
+            <p id="error-msg" class="text-red-500 text-sm mt-4 hidden text-center">Unauthorized. Please try again.</p>
+        </div>
+    </div>
+
+    <div id="main-content" class="hidden">
+        <div class="no-print flex justify-center space-x-4 py-6 bg-slate-800 sticky top-0 z-10 shadow-md">
+            <button onclick="exportPDF()" class="bg-emerald-500 text-white px-8 py-2 rounded-full font-bold shadow-lg hover:bg-emerald-600 transition">Download PDF</button>
+            <button onclick="window.location.reload()" class="bg-slate-600 text-white px-8 py-2 rounded-full font-bold shadow-lg hover:bg-slate-700 transition">Logout</button>
+        </div>
+
+        <div id="timesheet" class="a4-page">
+            <div class="flex justify-between items-start border-b-2 border-blue-800 pb-6 mb-8">
+                <div>
+                    <h1 class="text-4xl font-black text-blue-900 tracking-tighter">WEEKLY TIMESHEET</h1>
+                    <div class="mt-4 flex items-center space-x-2">
+                        <span class="font-bold text-sm text-gray-500 uppercase">Week Ending:</span>
+                        <input type="date" class="border-b-dotted
