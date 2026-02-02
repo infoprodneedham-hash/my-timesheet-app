@@ -15,13 +15,12 @@
             margin: 10px auto;
             background: white;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
         }
         input, textarea { border: none; background: transparent; width: 100%; }
         input:focus, textarea:focus { outline: none; background: #f0f9ff; }
         .border-b-dotted { border-bottom: 2px dotted #e2e8f0; }
-        table { page-break-inside: auto; }
-        tr { page-break-inside: avoid; page-break-after: auto; }
-        /* Remove arrows from number input */
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
@@ -32,8 +31,8 @@
             <h2 class="text-xl font-bold mb-2 uppercase tracking-tight">Damien Needham</h2>
             <p class="text-xs text-slate-500 mb-6 uppercase tracking-widest">Support Portal</p>
             <div class="space-y-4 text-left">
-                <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300">
-                <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300">
+                <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300 outline-none">
+                <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300 outline-none">
                 <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">Access Timesheet</button>
             </div>
             <p id="error-msg" class="text-red-500 text-sm mt-4 hidden">Invalid credentials.</p>
@@ -60,26 +59,26 @@
                 <div class="w-1/2 flex flex-col items-end">
                     <div class="mb-4 text-right">
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Invoice No.</label>
-                        <input type="number" placeholder="0000" class="text-3xl font-black text-right text-blue-900 border-b-dotted w-32 outline-none" maxlength="4">
+                        <input type="number" placeholder="0000" class="text-3xl font-black text-right text-blue-900 border-b-dotted w-32 outline-none">
                     </div>
                     <div class="flex items-center justify-end space-x-3">
                         <span class="font-bold text-[10px] text-slate-400 uppercase">Week Ending:</span>
-                        <input type="date" id="week-date" class="border-b-dotted font-bold text-lg w-40 text-blue-700 text-right">
+                        <input type="date" class="border-b-dotted font-bold text-lg w-40 text-blue-700 text-right outline-none">
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-12 mb-10">
                 <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
-                    <label class="block text-[10px] font-bold uppercase text-blue-900 mb-2 tracking-widest">Bill To / Participant</label>
+                    <label class="block text-[10px] font-bold uppercase text-blue-900 mb-2 tracking-widest text-xs">Bill To / Participant</label>
                     <input type="text" value="Christopher Stone-Moore" class="font-bold text-lg mb-1 outline-none">
                     <p class="text-sm text-slate-600">29 Langibanool Ave, Hamlyn Heights</p>
                 </div>
                 <div class="flex flex-col justify-center items-end text-right">
                     <div class="space-y-1 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                        <p>Weekday: <span class="text-blue-600 font-mono">$70.00/hr</span></p>
-                        <p>Saturday: <span class="text-orange-600 font-mono">$98.00/hr</span></p>
-                        <p>Sunday: <span class="text-red-600 font-mono">$127.00/hr</span></p>
+                        <p>Weekday: <span class="text-blue-600 font-mono text-xs">$70.00/hr</span></p>
+                        <p>Saturday: <span class="text-orange-600 font-mono text-xs">$98.00/hr</span></p>
+                        <p>Sunday: <span class="text-red-600 font-mono text-xs">$127.00/hr</span></p>
                     </div>
                 </div>
             </div>
@@ -98,7 +97,7 @@
                     </tbody>
             </table>
 
-            <div class="flex justify-end mt-12">
+            <div class="flex justify-end mb-10">
                 <div class="w-1/3">
                     <div class="flex justify-between items-center px-4 py-2 border-b border-slate-200">
                         <span class="text-[10px] font-bold uppercase text-slate-500">Total Hours:</span>
@@ -109,6 +108,12 @@
                         <span id="grand-total" class="text-2xl font-black font-mono">$0.00</span>
                     </div>
                 </div>
+            </div>
+
+            <div class="mt-auto border-t border-slate-100 pt-8 pb-4 text-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Damien Needham Support Services • ABN 35 699 360 128 • Bankwest • 303-092 • 5228515
+                </p>
             </div>
         </div>
     </div>
@@ -133,9 +138,9 @@
                 row.innerHTML = `
                     <td class="p-4 font-bold text-slate-700">${day}</td>
                     <td class="p-2">
-                        <textarea class="h-10 py-1 text-xs resize-none font-medium leading-tight">${config[day].desc}\n</textarea>
+                        <textarea class="h-10 py-1 text-xs resize-none font-medium leading-tight outline-none">${config[day].desc}\n</textarea>
                     </td>
-                    <td class="p-2 border-x border-slate-50"><input type="number" class="hr-input text-center font-bold text-blue-600" value="0" step="0.25" data-day="${day}" oninput="calculateAll()"></td>
+                    <td class="p-2 border-x border-slate-50"><input type="number" class="hr-input text-center font-bold text-blue-600 outline-none" value="0" step="0.25" data-day="${day}" oninput="calculateAll()"></td>
                     <td class="p-2 text-center text-slate-400 font-medium font-mono">$${config[day].rate}</td>
                     <td class="p-4 text-right font-mono font-bold text-slate-600 day-total">$0.00</td>
                 `;
@@ -183,7 +188,7 @@
             const element = document.getElementById('timesheet');
             const opt = {
                 margin: 0,
-                filename: `Invoice_Damien_Needham_${new Date().toISOString().split('T')[0]}.pdf`,
+                filename: `Invoice_${new Date().toISOString().split('T')[0]}.pdf`,
                 image: { type: 'jpeg', quality: 1 },
                 html2canvas: { scale: 3 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -193,4 +198,3 @@
     </script>
 </body>
 </html>
-
