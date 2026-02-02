@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Timesheet - A4</title>
+    <title>Premium Weekly Timesheet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -14,161 +14,23 @@
             padding: 15mm 20mm;
             margin: 10px auto;
             background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
-        input, textarea, select { border: none; background: transparent; width: 100%; }
-        input:focus, textarea:focus { outline: none; background: #f9fafb; }
-        .border-b-dotted { border-bottom: 1px dotted #ccc; }
+        input, textarea { border: none; background: transparent; width: 100%; }
+        input:focus, textarea:focus { outline: none; background: #f0f7ff; }
+        .border-b-dotted { border-bottom: 2px dotted #e2e8f0; }
     </style>
 </head>
-<body class="bg-gray-200 font-sans text-gray-800">
+<body class="bg-slate-100 font-sans text-slate-900">
 
     <div id="login-overlay" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-96">
-            <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">Secure Access</h2>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 border border-slate-200">
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">Timesheet Access</h2>
             <div class="space-y-4">
-                <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg bg-gray-50">
-                <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg bg-gray-50">
-                <button onclick="checkLogin()" class="w-full bg-blue-700 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition">Enter Dashboard</button>
+                <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300">
+                <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300">
+                <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition duration-200">Login</button>
             </div>
-            <p id="error-msg" class="text-red-500 text-sm mt-4 hidden text-center">Unauthorized. Please try again.</p>
+            <p id="error-msg" class="text-red-500 text-sm mt-4 hidden text-center font-medium">Invalid credentials. Please try again.</p>
         </div>
     </div>
-
-    <div id="main-content" class="hidden">
-        <div class="no-print flex justify-center space-x-4 py-6 bg-slate-800 sticky top-0 z-10 shadow-md">
-            <button onclick="exportPDF()" class="bg-emerald-500 text-white px-8 py-2 rounded-full font-bold shadow-lg hover:bg-emerald-600 transition">Download PDF</button>
-            <button onclick="window.location.reload()" class="bg-slate-600 text-white px-8 py-2 rounded-full font-bold shadow-lg hover:bg-slate-700 transition">Logout</button>
-        </div>
-
-        <div id="timesheet" class="a4-page">
-            <div class="flex justify-between items-start border-b-2 border-blue-800 pb-6 mb-8">
-                <div>
-                    <h1 class="text-4xl font-black text-blue-900 tracking-tighter">WEEKLY TIMESHEET</h1>
-                    <div class="mt-4 flex items-center space-x-2">
-                        <span class="font-bold text-sm text-gray-500 uppercase">Week Ending:</span>
-                        <input type="date" class="border-b-dotted font-semibold w-40">
-                    </div>
-                </div>
-                <div class="w-1/3 text-right">
-                    <label class="block text-xs font-bold text-gray-400 uppercase italic">Worker Details</label>
-                    <input type="text" placeholder="Worker Full Name" class="text-xl font-bold text-right border-b-dotted placeholder-gray-300">
-                    <input type="text" placeholder="Worker ID / Role" class="text-sm text-right border-b-dotted mt-1">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-12 mb-10">
-                <div class="p-4 bg-gray-50 rounded-lg">
-                    <label class="block text-xs font-bold uppercase text-blue-800 mb-2">Client Information</label>
-                    <input type="text" placeholder="Company / Client Name" class="font-bold mb-2 border-b-dotted py-1">
-                    <textarea placeholder="Billing Address & Contact Details" class="text-sm h-24 border-b-dotted py-1 resize-none"></textarea>
-                </div>
-                <div class="flex flex-col justify-end items-end space-y-4">
-                    <div class="w-full text-right">
-                        <label class="block text-xs font-bold uppercase text-gray-400">Hourly Rate</label>
-                        <div class="flex items-center justify-end text-2xl font-mono">
-                            <span>$</span>
-                            <input type="number" id="global-rate" value="50" oninput="calculateAll()" class="w-24 text-right font-bold text-blue-700">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <table class="w-full mb-10 text-sm">
-                <thead>
-                    <tr class="bg-blue-900 text-white uppercase text-xs tracking-widest">
-                        <th class="p-3 text-left w-32">Day</th>
-                        <th class="p-3 text-left">Description of Tasks</th>
-                        <th class="p-3 text-center w-24">Hours</th>
-                        <th class="p-3 text-right w-32">Daily Total</th>
-                    </tr>
-                </thead>
-                <tbody id="timesheet-rows">
-                    <script>
-                        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                        days.forEach(day => {
-                            document.write(`
-                                <tr class="border-b border-gray-200">
-                                    <td class="p-3 font-bold text-gray-600">${day}</td>
-                                    <td class="p-2"><textarea placeholder="Details of work performed..." class="h-10 text-xs py-1 resize-none"></textarea></td>
-                                    <td class="p-2"><input type="number" class="hr-input text-center font-bold" value="0" step="0.5" oninput="calculateAll()"></td>
-                                    <td class="p-2 text-right font-mono text-gray-400 day-total">$0.00</td>
-                                </tr>
-                            `);
-                        });
-                    </script>
-                </tbody>
-            </table>
-
-            <div class="flex justify-between items-start">
-                <div class="w-1/2 p-4 border border-dashed border-gray-300 rounded-lg italic text-gray-500 text-xs">
-                    I hereby certify that the hours recorded above are accurate and represent work performed for the client listed.
-                </div>
-                <div class="w-1/3">
-                    <div class="flex justify-between items-center p-2 bg-slate-100 mb-2">
-                        <span class="text-xs font-bold uppercase">Total Hours:</span>
-                        <span id="total-hrs" class="font-mono font-bold">0.0</span>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-blue-900 text-white rounded shadow-lg">
-                        <span class="text-sm font-bold uppercase">Grand Total:</span>
-                        <span id="grand-total" class="text-xl font-mono font-bold">$0.00</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-20 grid grid-cols-2 gap-16">
-                <div>
-                    <div class="border-b border-black mb-1 h-12"></div>
-                    <p class="text-[10px] font-bold uppercase text-gray-500">Worker Authorized Signature</p>
-                </div>
-                <div>
-                    <div class="border-b border-black mb-1 h-12"></div>
-                    <p class="text-[10px] font-bold uppercase text-gray-500">Client / Manager Signature</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function checkLogin() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            if(u === "admin" && p === "password123") {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('main-content').classList.remove('hidden');
-            } else {
-                document.getElementById('error-msg').classList.remove('hidden');
-            }
-        }
-
-        function calculateAll() {
-            const rate = parseFloat(document.getElementById('global-rate').value) || 0;
-            const rows = document.querySelectorAll('#timesheet-rows tr');
-            let totalHours = 0;
-
-            rows.forEach(row => {
-                const hrs = parseFloat(row.querySelector('.hr-input').value) || 0;
-                totalHours += hrs;
-                const dailyTotal = hrs * rate;
-                row.querySelector('.day-total').innerText = `$${dailyTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            });
-
-            const grandTotal = totalHours * rate;
-            document.getElementById('total-hrs').innerText = totalHours.toFixed(1);
-            document.getElementById('grand-total').innerText = `$${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-        }
-
-        function exportPDF() {
-            const element = document.getElementById('timesheet');
-            const opt = {
-                margin: 0,
-                filename: 'Weekly-Timesheet.pdf',
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 3, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().from(element).set(opt).save();
-        }
-    </script>
-</body>
-</html>
