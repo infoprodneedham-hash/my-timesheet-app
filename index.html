@@ -28,8 +28,8 @@
 
     <div id="login-overlay" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 border border-slate-200 text-center">
-            <h2 class="text-xl font-bold mb-2 uppercase tracking-tight">Damien Needham</h2>
-            <p class="text-xs text-slate-500 mb-6 uppercase tracking-widest">Support Portal</p>
+            <h2 class="text-xl font-bold mb-2 uppercase tracking-tight text-slate-800">Damien Needham</h2>
+            <p class="text-xs text-slate-500 mb-6 uppercase tracking-widest text-slate-400">Support Portal</p>
             <div class="space-y-4 text-left">
                 <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300 outline-none">
                 <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300 outline-none">
@@ -51,17 +51,22 @@
                 <div class="w-1/2">
                     <h1 class="text-4xl font-black text-blue-900 tracking-tighter uppercase">Invoice / Timesheet</h1>
                     <div class="mt-4 text-sm font-bold text-slate-600 leading-relaxed">
-                        <p class="text-blue-800 text-lg">Damien Needham Support Services</p>
+                        <p class="text-blue-800 text-lg font-black">Damien Needham Support Services</p>
                         <p>ABN: 35 699 360 128</p>
-                        <p class="mt-2 text-slate-400 font-normal text-xs uppercase tracking-tighter">Bankwest | BSB: 303-092 | ACC: 5228515</p>
+                        <p class="mt-2 text-slate-400 font-normal text-xs uppercase tracking-tighter font-mono">Bankwest | BSB: 303-092 | ACC: 5228515</p>
                     </div>
                 </div>
                 <div class="w-1/2 flex flex-col items-end">
-                    <div class="mb-4 text-right">
+                    <div class="text-right">
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Invoice No.</label>
-                        <input type="number" placeholder="0000" class="text-3xl font-black text-right text-blue-900 border-b-dotted w-32 outline-none">
+                        <input type="number" placeholder="0000" class="text-3xl font-black text-right text-blue-900 border-b-dotted w-32 outline-none mb-2">
+                        
+                        <div class="text-[11px] font-semibold text-slate-600 space-y-0.5 mt-1">
+                            <p>M: 0437 179 359</p>
+                            <p>E: info.pro.dneedham@gmail.com</p>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-end space-x-3">
+                    <div class="flex items-center justify-end space-x-3 mt-6">
                         <span class="font-bold text-[10px] text-slate-400 uppercase">Week Ending:</span>
                         <input type="date" class="border-b-dotted font-bold text-lg w-40 text-blue-700 text-right outline-none">
                     </div>
@@ -141,7 +146,7 @@
                         <textarea class="h-10 py-1 text-xs resize-none font-medium leading-tight outline-none">${config[day].desc}\n</textarea>
                     </td>
                     <td class="p-2 border-x border-slate-50"><input type="number" class="hr-input text-center font-bold text-blue-600 outline-none" value="0" step="0.25" data-day="${day}" oninput="calculateAll()"></td>
-                    <td class="p-2 text-center text-slate-400 font-medium font-mono">$${config[day].rate}</td>
+                    <td class="p-2 text-center text-slate-400 font-medium font-mono text-xs">$${config[day].rate}</td>
                     <td class="p-4 text-right font-mono font-bold text-slate-600 day-total">$0.00</td>
                 `;
                 tableBody.appendChild(row);
@@ -177,9 +182,10 @@
         }
 
         function resetForm() {
-            if(confirm('Clear all hours for the week?')) {
+            if(confirm('Clear all entries and reset form?')) {
                 const inputs = document.querySelectorAll('.hr-input');
                 inputs.forEach(i => i.value = 0);
+                document.querySelectorAll('input[type="number"]').forEach(i => i.value = '');
                 calculateAll();
             }
         }
