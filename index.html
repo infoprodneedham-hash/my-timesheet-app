@@ -10,125 +10,115 @@
         @media print { .no-print { display: none; } }
         .a4-page {
             width: 210mm;
-            min-height: 297mm;
-            padding: 15mm 20mm;
-            margin: 10px auto;
+            height: 297mm;
+            padding: 10mm 15mm;
+            margin: 0 auto;
             background: white;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         input, textarea { border: none; background: transparent; width: 100%; }
-        input:focus, textarea:focus { outline: none; background: #f0f9ff; }
-        .border-b-dotted { border-bottom: 2px dotted #e2e8f0; }
+        input:focus, textarea:focus { outline: none; background: #f8fafc; }
+        .border-b-dotted { border-bottom: 1px dotted #cbd5e1; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        textarea { resize: none; overflow: hidden; }
     </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-900">
 
     <div id="login-overlay" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 border border-slate-200 text-center">
-            <h2 class="text-xl font-bold mb-2 uppercase tracking-tight text-slate-800">Damien Needham</h2>
-            <p class="text-xs text-slate-500 mb-6 uppercase tracking-widest text-slate-400">Support Portal</p>
-            
-            <div class="space-y-4 text-left">
-                <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300 outline-none">
-                <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg bg-slate-50 border-slate-300 outline-none">
-                
-                <div class="flex items-start space-x-3 py-2">
-                    <input type="checkbox" id="auth-check" class="mt-1 w-4 h-4 cursor-pointer" onchange="toggleLoginBtn()">
-                    <label for="auth-check" class="text-[11px] text-slate-500 leading-tight cursor-pointer">
-                        I confirm that I am authorized to access this portal and the data entered is for official billing purposes only.
-                    </label>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-80 border border-slate-200 text-center">
+            <h2 class="text-lg font-bold mb-1 uppercase tracking-tight text-slate-800">Damien Needham</h2>
+            <p class="text-[10px] text-slate-500 mb-4 uppercase tracking-widest">Support Portal</p>
+            <div class="space-y-3 text-left">
+                <input type="text" id="username" placeholder="Username" class="w-full p-2 border rounded-lg bg-slate-50 border-slate-300 outline-none text-sm">
+                <input type="password" id="password" placeholder="Password" class="w-full p-2 border rounded-lg bg-slate-50 border-slate-300 outline-none text-sm">
+                <div class="flex items-start space-x-2 py-1">
+                    <input type="checkbox" id="auth-check" class="mt-0.5 w-3 h-3 cursor-pointer" onchange="toggleLoginBtn()">
+                    <label for="auth-check" class="text-[9px] text-slate-500 leading-tight cursor-pointer">Authorized access only. Data is for official billing.</label>
                 </div>
-
-                <button id="login-btn" onclick="checkLogin()" disabled 
-                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition opacity-50 cursor-not-allowed">
-                    Access Timesheet
-                </button>
+                <button id="login-btn" onclick="checkLogin()" disabled class="w-full bg-blue-600 text-white py-2 rounded-lg font-bold opacity-50 cursor-not-allowed text-sm">Access Portal</button>
             </div>
-            <p id="error-msg" class="text-red-500 text-sm mt-4 hidden text-center">Invalid credentials.</p>
+            <p id="error-msg" class="text-red-500 text-[10px] mt-2 hidden text-center">Invalid credentials.</p>
         </div>
     </div>
 
     <div id="main-content" class="hidden">
-        <div class="no-print flex justify-center space-x-4 py-6 bg-slate-900 sticky top-0 z-10 shadow-lg">
-            <button onclick="exportPDF()" class="bg-emerald-500 text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-emerald-600 transition">Download PDF</button>
-            <button onclick="resetForm()" class="bg-slate-600 text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-slate-700 transition">Reset Form</button>
-            <button onclick="window.location.reload()" class="bg-slate-800 text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-slate-900 transition text-xs opacity-50">Logout</button>
+        <div class="no-print flex justify-center space-x-4 py-4 bg-slate-900 sticky top-0 z-10 shadow-lg">
+            <button onclick="exportPDF()" class="bg-emerald-500 text-white px-6 py-1.5 rounded-full font-bold text-sm hover:bg-emerald-600 transition">Download PDF</button>
+            <button onclick="resetForm()" class="bg-slate-600 text-white px-6 py-1.5 rounded-full font-bold text-sm hover:bg-slate-700 transition">Reset</button>
+            <button onclick="window.location.reload()" class="bg-slate-800 text-white px-6 py-1.5 rounded-full font-bold text-xs opacity-50">Logout</button>
         </div>
 
         <div id="timesheet" class="a4-page">
-            <div class="flex justify-between items-start border-b-4 border-blue-900 pb-8 mb-8">
+            <div class="flex justify-between items-start border-b-2 border-blue-900 pb-4 mb-4">
                 <div class="w-1/2">
-                    <h1 class="text-4xl font-black text-blue-900 tracking-tighter uppercase">Invoice / Timesheet</h1>
-                    <div class="mt-4 text-sm font-bold text-slate-600 leading-relaxed">
-                        <p class="text-blue-800 text-lg font-black">Damien Needham Support Services</p>
+                    <h1 class="text-3xl font-black text-blue-900 tracking-tighter uppercase">Invoice</h1>
+                    <div class="mt-2 text-[11px] font-bold text-slate-600 leading-tight">
+                        <p class="text-blue-800 text-base font-black">Damien Needham Support Services</p>
                         <p>ABN: 35 699 360 128</p>
-                        <p class="mt-2 text-slate-400 font-normal text-xs uppercase tracking-tighter font-mono">Bankwest | BSB: 303-092 | ACC: 5228515</p>
+                        <p class="mt-1 text-slate-400 font-normal font-mono">Bankwest | BSB: 303-092 | ACC: 5228515</p>
                     </div>
                 </div>
                 <div class="w-1/2 flex flex-col items-end">
                     <div class="text-right">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Invoice No.</label>
-                        <input type="number" id="invoice-num" placeholder="0000" class="text-3xl font-black text-right text-blue-900 border-b-dotted w-32 outline-none mb-2">
-                        
-                        <div class="text-[11px] font-semibold text-slate-600 space-y-0.5 mt-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Invoice No.</label>
+                        <input type="number" id="invoice-num" placeholder="0000" class="text-2xl font-black text-right text-blue-900 border-b-dotted w-24 outline-none">
+                        <div class="text-[10px] font-semibold text-slate-600 mt-1">
                             <p>M: 0437 179 359</p>
                             <p>E: info.pro.dneedham@gmail.com</p>
                         </div>
                     </div>
-                    <div class="flex items-center justify-end space-x-3 mt-6">
-                        <span class="font-bold text-[10px] text-slate-400 uppercase">Week Ending (Sun):</span>
-                        <input type="date" id="week-ending-date" onchange="updateDailyDates()" class="border-b-dotted font-bold text-lg w-40 text-blue-700 text-right outline-none">
+                    <div class="flex items-center justify-end space-x-2 mt-4">
+                        <span class="font-bold text-[9px] text-slate-400 uppercase">Week Ending:</span>
+                        <input type="date" id="week-ending-date" onchange="updateDailyDates()" class="border-b-dotted font-bold text-base w-36 text-blue-700 text-right outline-none">
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-12 mb-10">
-                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
-                    <label class="block text-[10px] font-bold uppercase text-blue-900 mb-2 tracking-widest text-xs">Bill To / Participant</label>
-                    <input type="text" value="Christopher Stone-Moore" class="font-bold text-lg mb-1 outline-none">
-                    <p class="text-sm text-slate-600">29 Langibanool Ave, Hamlyn Heights</p>
+            <div class="grid grid-cols-2 gap-8 mb-4">
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <label class="block text-[8px] font-bold uppercase text-blue-900 mb-1 tracking-widest">Bill To</label>
+                    <input type="text" value="Christopher Stone-Moore" class="font-bold text-base outline-none">
+                    <p class="text-[11px] text-slate-600">29 Langibanool Ave, Hamlyn Heights</p>
                 </div>
-                <div class="flex flex-col justify-center items-end text-right">
-                    <div class="space-y-1 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                        <p>Weekday: <span class="text-blue-600 font-mono text-xs font-black">$70.00/hr</span></p>
-                        <p>Saturday: <span class="text-orange-600 font-mono text-xs font-black">$98.00/hr</span></p>
-                        <p>Sunday: <span class="text-red-600 font-mono text-xs font-black">$127.00/hr</span></p>
-                    </div>
+                <div class="flex flex-col justify-center items-end text-right text-[9px] font-bold text-slate-400 uppercase">
+                    <p>Weekday: <span class="text-blue-600 font-mono font-black">$70.00/hr</span></p>
+                    <p>Sat: <span class="text-orange-600 font-mono font-black">$98.00/hr</span></p>
+                    <p>Sun: <span class="text-red-600 font-mono font-black">$127.00/hr</span></p>
                 </div>
             </div>
 
-            <table class="w-full mb-10 border-collapse">
+            <table class="w-full mb-4 border-collapse">
                 <thead>
-                    <tr class="bg-blue-900 text-white uppercase text-[9px] tracking-[0.2em]">
-                        <th class="p-4 text-left rounded-tl-lg w-40">Day / Date</th>
-                        <th class="p-4 text-left">Description / NDIS Item Code</th>
-                        <th class="p-4 text-center w-24 border-x border-blue-800">Hours</th>
-                        <th class="p-4 text-center w-24 border-x border-blue-800">Rate</th>
-                        <th class="p-4 text-right rounded-tr-lg w-32">Subtotal</th>
+                    <tr class="bg-blue-900 text-white uppercase text-[8px] tracking-widest">
+                        <th class="p-2 text-left w-32">Day / Date</th>
+                        <th class="p-2 text-left">Description / Item Code</th>
+                        <th class="p-2 text-center w-20">Hours</th>
+                        <th class="p-2 text-center w-20">Rate</th>
+                        <th class="p-2 text-right w-24">Subtotal</th>
                     </tr>
                 </thead>
-                <tbody id="timesheet-rows" class="text-sm">
+                <tbody id="timesheet-rows" class="text-[11px]">
                     </tbody>
             </table>
 
-            <div class="flex justify-end mb-10">
+            <div class="flex justify-end mb-4">
                 <div class="w-1/3">
-                    <div class="flex justify-between items-center px-4 py-2 border-b border-slate-200">
-                        <span class="text-[10px] font-bold uppercase text-slate-500">Total Hours:</span>
-                        <span id="total-hrs" class="font-bold text-lg text-slate-700">0.00</span>
+                    <div class="flex justify-between items-center px-2 py-1 border-b border-slate-200">
+                        <span class="text-[9px] font-bold uppercase text-slate-500">Total Hours:</span>
+                        <span id="total-hrs" class="font-bold text-sm">0.00</span>
                     </div>
-                    <div class="flex justify-between items-center p-4 bg-blue-900 text-white rounded-b-xl shadow-xl">
-                        <span class="text-xs font-bold uppercase tracking-widest">Total Amount</span>
-                        <span id="grand-total" class="text-2xl font-black font-mono">$0.00</span>
+                    <div class="flex justify-between items-center p-3 bg-blue-900 text-white rounded-b-lg">
+                        <span class="text-[10px] font-bold uppercase tracking-widest">Total Amount</span>
+                        <span id="grand-total" class="text-xl font-black font-mono">$0.00</span>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-auto border-t border-slate-100 pt-8 pb-4 text-center">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <div class="mt-auto border-t border-slate-100 pt-4 pb-2 text-center">
+                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
                     Damien Needham Support Services • ABN 35 699 360 128 • Bankwest • 303-092 • 5228515
                 </p>
             </div>
@@ -153,16 +143,11 @@
                 const row = document.createElement('tr');
                 row.className = "border-b border-slate-100";
                 row.innerHTML = `
-                    <td class="p-4">
-                        <div class="font-bold text-slate-800">${day}</div>
-                        <div id="date-${day}" class="text-[10px] text-slate-400 font-mono">--/--/----</div>
-                    </td>
-                    <td class="p-2">
-                        <textarea class="h-10 py-1 text-xs resize-none font-medium leading-tight outline-none">${config[day].desc}\n</textarea>
-                    </td>
-                    <td class="p-2 border-x border-slate-50"><input type="number" class="hr-input text-center font-bold text-blue-600 outline-none" value="0" step="0.25" data-day="${day}" oninput="calculateAll()"></td>
-                    <td class="p-2 text-center text-slate-400 font-medium font-mono text-xs">$${config[day].rate}</td>
-                    <td class="p-4 text-right font-mono font-bold text-slate-600 day-total">$0.00</td>
+                    <td class="p-2"><div class="font-bold">${day}</div><div id="date-${day}" class="text-[9px] text-slate-400 font-mono">--/--/--</div></td>
+                    <td class="p-1"><textarea class="h-8 py-1 text-[10px] leading-tight outline-none">${config[day].desc}\n</textarea></td>
+                    <td class="p-1"><input type="number" class="hr-input text-center font-bold text-blue-600 outline-none" value="0" step="0.25" data-day="${day}" oninput="calculateAll()"></td>
+                    <td class="p-1 text-center text-slate-400 font-mono text-[10px]">$${config[day].rate}</td>
+                    <td class="p-2 text-right font-mono font-bold text-slate-600 day-total">$0.00</td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -171,78 +156,58 @@
         function updateDailyDates() {
             const endDateValue = document.getElementById('week-ending-date').value;
             if (!endDateValue) return;
-
             Object.keys(config).forEach(day => {
                 const dateObj = new Date(endDateValue);
                 dateObj.setDate(dateObj.getDate() + config[day].offset);
-                
-                const dayStr = dateObj.getDate().toString().padStart(2, '0');
-                const monthStr = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-                const yearStr = dateObj.getFullYear();
-                
-                document.getElementById(`date-${day}`).innerText = `${dayStr}/${monthStr}/${yearStr}`;
+                document.getElementById(`date-${day}`).innerText = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
             });
         }
 
         function toggleLoginBtn() {
-            const checkbox = document.getElementById('auth-check');
             const btn = document.getElementById('login-btn');
-            btn.disabled = !checkbox.checked;
-            btn.classList.toggle('opacity-50', !checkbox.checked);
-            btn.classList.toggle('cursor-not-allowed', !checkbox.checked);
+            const check = document.getElementById('auth-check').checked;
+            btn.disabled = !check;
+            btn.classList.toggle('opacity-50', !check);
+            btn.classList.toggle('cursor-not-allowed', !check);
         }
 
         function checkLogin() {
-            const u = document.getElementById('username').value.toLowerCase();
-            const p = document.getElementById('password').value;
-            if(u === "admin" && p === "password123") {
+            if(document.getElementById('username').value.toLowerCase() === "admin" && document.getElementById('password').value === "password123") {
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('main-content').classList.remove('hidden');
                 generateRows();
-            } else {
-                document.getElementById('error-msg').classList.remove('hidden');
-            }
+            } else { document.getElementById('error-msg').classList.remove('hidden'); }
         }
 
         function calculateAll() {
-            const rows = document.querySelectorAll('#timesheet-rows tr');
             let totalHours = 0, grandTotal = 0;
-            rows.forEach(row => {
-                const input = row.querySelector('.hr-input');
-                if(!input) return;
-                const day = input.getAttribute('data-day');
+            document.querySelectorAll('.hr-input').forEach(input => {
                 const hrs = parseFloat(input.value) || 0;
-                const dailySum = hrs * config[day].rate;
-                totalHours += hrs;
-                grandTotal += dailySum;
-                row.querySelector('.day-total').innerText = `$${dailySum.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                const sub = hrs * config[input.getAttribute('data-day')].rate;
+                totalHours += hrs; grandTotal += sub;
+                input.closest('tr').querySelector('.day-total').innerText = `$${sub.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
             });
             document.getElementById('total-hrs').innerText = totalHours.toFixed(2);
             document.getElementById('grand-total').innerText = `$${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
         }
 
         function resetForm() {
-            if(confirm('Clear all entries and reset form?')) {
+            if(confirm('Clear form?')) {
                 document.querySelectorAll('.hr-input').forEach(i => i.value = 0);
                 document.getElementById('invoice-num').value = '';
                 document.getElementById('week-ending-date').value = '';
-                Object.keys(config).forEach(day => {
-                    document.getElementById(`date-${day}`).innerText = '--/--/----';
-                });
                 calculateAll();
             }
         }
 
         function exportPDF() {
             const element = document.getElementById('timesheet');
-            const opt = {
+            html2pdf().from(element).set({
                 margin: 0,
-                filename: `Invoice_Damien_Needham_${new Date().toISOString().split('T')[0]}.pdf`,
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 3 },
+                filename: `Invoice_${new Date().toISOString().split('T')[0]}.pdf`,
+                html2canvas: { scale: 2 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().from(element).set(opt).save();
+            }).save();
         }
     </script>
 </body>
